@@ -80,7 +80,7 @@ class CoupledModel:
             len_scale=1e4, beta_scale=1e3,
             time_scale=1, pressure_scale=1,
             g=9.81, rho_i=917., rho_w=1000.0,
-            n=3.0, A=1e-16, eps_reg=1e-6,
+            n=3.0, A=1e-15, eps_reg=1e-6,
             thklim=1e-3, theta=1.0, alpha=0,
             p=4, c=0.7, z_sea=-1000,
             membrane_degree=2, shear_degree=3,
@@ -275,6 +275,11 @@ class CoupledModel:
             self.N = (df.min_value(c*Hmid_i + df.Constant(1e-2),
                           Hmid_i-rho_w/rho_i*(z_sea - Bhat)) 
                           + df.Constant(1e-4))
+            basal_stress = -gamma*beta2*self.N*df.dot(U_b,Phi_b)*df.dx
+        elif sliding_law == 'varying_N':
+            self.N = 1*(df.min_value(c*Hmid_i + df.Constant(1e-2),
+                           Hmid_i-rho_w/rho_i*(z_sea - Bhat)) 
+                           + df.Constant(1e-4))
             basal_stress = -gamma*beta2*self.N*df.dot(U_b,Phi_b)*df.dx
 
         driving_stress = (omega*Hmid*df.dot(S_grad_lin,Phibar)*df.dx 
